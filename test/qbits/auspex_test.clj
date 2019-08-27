@@ -136,7 +136,9 @@
   (let [fs [(a/success-future 1) (a/success-future 2) (a/success-future 3)]]
     (is (seq  @(a/zip fs)))
     (is (every? a/realized? fs)))
-  (is (= 1 @(a/one [(a/success-future 1) (a/success-future 2) (a/success-future 3)])))
+  (is (= 1 @(a/one (a/success-future 1)
+                   (a/success-future 2)
+                   (a/success-future 3))))
 
   (let [p (promise)]
     (a/handle (a/success-future ::foo)

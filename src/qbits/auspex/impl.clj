@@ -18,9 +18,6 @@
     (.complete cf x))
 
   (-error! [cf e]
-    ;; (p/-complete! cf
-    ;;               (fn [] (throw e))
-    ;;               (executor/current-thread-executor))
     (.completeExceptionally cf e))
 
   (-complete! [cf f executor]

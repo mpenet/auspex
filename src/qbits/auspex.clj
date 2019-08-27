@@ -99,7 +99,7 @@
 
 (defn one
   "Returns one value from a list of futures"
-  [cfs]
+  [& cfs]
   (CompletableFuture/anyOf (into-array CompletableFuture
                                        cfs)))
 (defn zip'
