@@ -15,17 +15,13 @@
 (extend-type CompletableFuture
   p/IFuture
   (-success! [cf x]
-    (.complete cf x)
-    cf)
+    (.complete cf x))
 
   (-error! [cf e]
-    ;; we need to make it that way so that exception hierarchy is
-    ;; consistent. Using .completeExceptionally we sometimes get the
-    ;; original exception and sometimes (w/ executor) we get an
-    ;; ExecutionException
-    (p/-complete! cf
-                  (fn [] (throw e))
-                  (executor/current-thread-executor)))
+    ;; (p/-complete! cf
+    ;;               (fn [] (throw e))
+    ;;               (executor/current-thread-executor))
+    (.completeExceptionally cf e))
 
   (-complete! [cf f executor]
     (.completeAsync cf
@@ -41,7 +37,11 @@
     ([cf error-class f]
      (.exceptionally cf
                      (f/function (fn [^Throwable t]
-                                   (let [ex (ex-cause t)]
+                                   (let [ex (cond-> t
+                                              ;; unwrap cause exception? or it's a bad idea?
+                                              (or (instance? ExecutionException t)
+                                                  (instance? CompletionException t))
+                                              ex-cause)]
                                      (if (instance? error-class ex)
                                        (f ex)
                                        (throw ex))))))))

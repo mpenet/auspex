@@ -21,8 +21,8 @@
   (is (a/future? (a/future (fn [] ::foo)))))
 
 (deftest supply-test
-  (is (= ::foo @(-> (a/future)
-                    (a/success! ::foo))))
+  (is (= ::foo @(doto (a/future)
+                  (a/success! ::foo))))
   (is (= ::foo @(a/success-future ::foo)))
   (is (thrown? ExecutionException
                @(a/future (fn [] (throw ex))
@@ -56,7 +56,7 @@
   (is (= ::foo
          @(-> (a/future)
               (a/timeout! 10)
-              (a/success! ::foo))))
+              (doto (a/success! ::foo)))))
 
   (is (= ::foo
          @(-> (a/chain (doto (a/future)
@@ -70,19 +70,19 @@
 
 (deftest error-test
   (is (thrown? ExecutionException
-               @(-> (a/future)
-                    (a/error! ex))))
+               @(doto (a/future)
+                  (a/error! ex))))
 
-  (is (a/error? (-> (a/future)
+  (is (a/error? (doto (a/future)
                     (a/error! ex))))
 
   (is (= ::foo
-         @(-> (-> (a/future)
+         @(-> (doto (a/future)
                   (a/error! ex))
               (a/catch (fn [_] ::foo)))))
 
   (is (= ::foo
-         @(-> (-> (a/future)
+         @(-> (doto (a/future)
                   (a/error! ex))
               (a/catch ExceptionInfo
                   (fn [_] ::foo)))))
@@ -93,7 +93,7 @@
                     (a/catch ExceptionInfo (fn [_] ::foo)))))
 
   (let [p (promise)]
-    @(-> (-> (a/future)
+    @(-> (doto (a/future)
              (a/error! ex))
          (a/catch ExceptionInfo (fn [_] ::foox))
          (a/finally (fn [] (deliver p ::bar))))
@@ -116,11 +116,11 @@
     (is (= ::bar @p))))
 
 (deftest complete-test
-  (is (= ::foo @(-> (a/future)
-                    (a/success! ::foo))))
+  (is (= ::foo @(doto (a/future)
+                  (a/success! ::foo))))
 
-  (let [f (-> (a/future)
-              (a/success! ex))]
+  (let [f (doto (a/future)
+            (a/success! ex))]
     @f
     (is (not (a/error? f))))
 
@@ -129,8 +129,8 @@
     (try @f (catch Exception e))
     (is (a/error? f)))
 
-  (is (a/realized? (-> (a/future)
-                       (a/success! ::foo)))))
+  (is (a/realized? (doto (a/future)
+                     (a/success! ::foo)))))
 
 (deftest consume-test
   (let [fs [(a/success-future 1) (a/success-future 2) (a/success-future 3)]]
@@ -143,10 +143,11 @@
               (fn [x err] (deliver p x)))
     (is (= @p ::foo)))
 
-  (let [p (promise)]
-    (a/handle (-> (a/future)
-                  (a/error! ex))
-              (fn [x err] (deliver p (ex-cause err))))
+  (let [p (promise)
+        f (a/future)]
+    (a/handle f (fn [x err]
+                  (deliver p err)))
+    (a/error! f ex)
     (is (= @p ex)))
 
   (let [p (promise)]
@@ -155,11 +156,12 @@
               executor)
     (is (= @p ::foo)))
 
-  (let [p (promise)]
-    (a/handle (-> (a/future)
-                  (a/error! ex))
+  (let [p (promise)
+        f (doto (a/future)
+                (a/error! ex))]
+    (a/handle f
               (fn [x err]
-                (deliver p (ex-cause err)))
+                (deliver p err))
               executor)
     (is (= @p ex)))
 
@@ -265,7 +267,6 @@
   (is (thrown? ExceptionInfo
                @(loop [x (throw ex)])))
 
-
   (is (= 5
          @(a/loop [x 0]
             (a/chain x
@@ -292,5 +293,3 @@
                             %))
                 (a/catch ExceptionInfo
                     (fn [_] ::foo)))))))
-
-;; (prn (run-tests))
