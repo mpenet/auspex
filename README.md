@@ -1,5 +1,7 @@
 # auspex
 
+It's a wip/experiment for now, expect breakage.
+
 A small wrapper over java11 `CompletableFuture` that mimics most of
 [manifold](https://github.com/ztellman/manifold) `deferred` API,
 including `chain`, `catch`, `finally`, `loop/recur`, `zip` and most of
