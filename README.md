@@ -48,15 +48,28 @@ Some examples of usage
   ;; prints nil ::foo
   )
 
+(let [f (-> (a/future (fn [] 0))
+            (a/then inc clojure.lang.Agent/soloExecutor)
+            (a/then inc clojure.lang.Agent/pooledExecutor))]
+
+  @f
+  ;; similar as before but with steps running on different executors
+  )
+
 (let [f0 (a/future)
       f (a/chain f0
                  inc
                  inc
                  inc)]
 
+  ;; chain returns a separate future, feeding f0 will set f0 to 0, f
+  ;; will be the future with the composition result
   (a/success! f0 0)
   @f
   ;; returns 3
+
+  @f0
+  ;; returns 0
   )
 
 (let [f0 (a/future)
