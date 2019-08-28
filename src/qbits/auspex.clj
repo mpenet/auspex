@@ -45,8 +45,7 @@
   "
   ([] (CompletableFuture.))
   ([f]
-   (CompletableFuture/supplyAsync (f/supplier f)
-                                  (executor/current-thread-executor)))
+   (future f (executor/current-thread-executor)))
   ([f executor]
    (CompletableFuture/supplyAsync (f/supplier f)
                                   executor)))
@@ -108,7 +107,7 @@
   [& fs]
   (-> (CompletableFuture/allOf (into-array CompletableFuture
                                            fs))
-      (then (fn [cf]
+      (then (fn [_]
               (map deref fs)))))
 
 (defn zip
@@ -145,33 +144,34 @@
   (let [pairs (partition 2 bindings)
         vars (map first pairs)
         vals (map second pairs)
-        ret (gensym "ret")]
+        var-syms (map (fn [_] (gensym "var")) vars)]
     `(let [result# (future)]
-       ((fn fun# [result# ~@vars]
-          (clojure.core/loop [~@(interleave vars vars)]
-            (let [~ret (try
+       ((fn fun# [result# ~@var-syms]
+          (clojure.core/loop [~@(interleave vars var-syms)]
+            (let [ret# (try
                          ~@body
                          (catch Throwable t#
                            (error! result# t#)))]
               (cond
-                (future? ~ret)
-                (handle ~ret
+                (future? ret#)
+                (handle ret#
                         (fn [ok# err#]
                           (cond
                             err#
                             (error! result# err#)
 
                             (recur? ok#)
-                            (apply fun# result# (deref ok#))
+                            (apply fun# result# @ok#)
 
                             :else
                             (success! result# ok#))))
 
-                (recur? ~ret)
-                (apply fun# result# @~ret)
+                (recur? ret#)
+                (apply fun# result# @ret#)
 
                 :else
-                (success! result# ~ret)))))
+                (success! result# ret#)))))
         result#
         ~@vals)
        result#)))
+

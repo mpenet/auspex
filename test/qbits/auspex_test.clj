@@ -252,6 +252,8 @@
                  (a/success-future 3)))))
 
 (deftest loop-recur-test
+  (is (true? @(a/loop [] true)))
+
   (is (= [0 1 2 3 4]
          @(a/loop [x []]
             (if (< (count x) 5)
@@ -294,4 +296,10 @@
                             (a/recur %)
                             %))
                 (a/catch ExceptionInfo
-                    (fn [_] ::foo)))))))
+                    (fn [_] ::foo))))))
+
+  (testing "loop vars destructuring"
+    (is (= 1 @(a/loop [{:keys [a]} {:a 1}] a)))
+    (is @(a/loop [[x & xs] [1 2 3]] (or (= x 3) (a/recur xs))))))
+
+#_(run-tests)
