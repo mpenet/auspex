@@ -1,6 +1,10 @@
 (ns qbits.auspex.function
   (:import
-   (java.util.function Function BiFunction BiConsumer Supplier Consumer)))
+   (java.util.function Function
+                       BiFunction
+                       BiConsumer
+                       Supplier
+                       Consumer)))
 
 (set! *warn-on-reflection* true)
 

@@ -2,13 +2,10 @@
   (:require [qbits.auspex.protocols :as p]
             [qbits.auspex.function :as f]
             [qbits.auspex.executor :as executor])
-  (:import (java.util.concurrent
-            CompletableFuture
-            CompletionStage
-            Executor
-            ExecutionException
-            CompletionException
-            CancellationException)))
+  (:import (java.util.concurrent CompletableFuture
+                                 Executor
+                                 CompletionException
+                                 ExecutionException)))
 
 (set! *warn-on-reflection* true)
 

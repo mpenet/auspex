@@ -7,18 +7,9 @@
             [qbits.auspex.function :as f]
             [qbits.auspex.executor :as executor]
             [qbits.auspex.impl :as impl])
-  (:import (java.util.concurrent
-            CompletableFuture CompletionStage Executor
-            AbstractExecutorService)))
+  (:import (java.util.concurrent CompletableFuture)))
 
 (set! *warn-on-reflection* true)
-
-;;; ICancel
-(def cancel! p/-cancel!)
-(def canceled? p/-canceled?)
-
-;;; ITimeout
-(def timeout! p/-timeout!)
 
 ;;; IFuture
 (def error! p/-error!)
@@ -33,6 +24,13 @@
 (def fmap p/-fmap)
 (def when-complete p/-when-complete)
 
+;;; ICancel
+(def cancel! p/-cancel!)
+(def canceled? p/-canceled?)
+
+;;; ITimeout
+(def timeout! p/-timeout!)
+
 (defn future
   "No arg creates an empty/incomplete future 1 arg creates a future that
   will get the return value of f as realized value 2 arg creates a
@@ -41,8 +39,7 @@
 
   The executor that is set at this stage will continue to be used for
   subsequent steps (then/chain etc) if another one is not specified at
-  another level.
-  "
+  another level."
   ([] (CompletableFuture.))
   ([f]
    (future f (executor/current-thread-executor)))
@@ -121,6 +118,7 @@
   (deref [_] args))
 
 (defn recur
+  "Like recur, but to be used with `qbits.auspex/loop`"
   [& args]
   (Recur. args))
 
@@ -129,10 +127,11 @@
   (instance? Recur x))
 
 (defmacro loop
-  "A version of Clojure's loop which allows for asynchronous loops, via `recur`.
-  `loop` will always return a deferred value, even if the body is
-  synchronous.  Note that `loop` does **not** coerce values to
-  deferreds, actual auspex/futures must be used.
+  "A version of Clojure's loop which allows for asynchronous loops, via
+  `qbits.auspex/recur`.  `loop` will always return a CompletableFuture
+  Value, even if the body is synchronous.  Note that `loop` does
+  **not** coerce values to deferreds, actual `qbits.auspex/future`s
+  must be used.
 
    (loop [i 1e6]
      (chain (future i)
@@ -174,4 +173,3 @@
         result#
         ~@vals)
        result#)))
-
