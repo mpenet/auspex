@@ -7,17 +7,21 @@ A small wrapper over java-11 `CompletableFuture` that mimics most of
 including `chain`, `catch`, `finally`, `loop/recur`, `zip` and most of
 the nice stuff. I intentionally left out let-flow.
 
-It also adds a few interesting features that CompletableFutures
-support out of the box, for instance per "step" executor
-configuration, cancellation.
-
-Futures realization by default runs on Thread/currentThread but you can
-also specify a custom executor.
+`future` here represents the result of an asynchronous computation
+(promise), so more in the java sense than `clojure.core/future` (which
+will always run it's computation on an unbounded threadpool).
 
 You can also use a `qbits.auspex/future` as replacement of
 `clojure.core/future` via `(a/future (fn [] ::foo) executor)` it would
-then run on whatever ExecutorService you'd choose (there's some sugar
-for that on `qbits.auspex.executor`).
+then realize the future on whatever ExecutorService you'd choose
+(there's some sugar for that on `qbits.auspex.executor`).
+
+Composition functions (`then`, `fmap`, `complete!`, `handle`,
+`finally`) all have an extra/optional `executor` argument that allows
+to control where computation happens, otherwise they will use the
+execution context of the previous step.  So if you specify an executor
+at a level be aware that subsequent levels will re-use it unless you
+specify otherwise.
 
 ## Performance
 
