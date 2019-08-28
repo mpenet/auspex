@@ -9,8 +9,10 @@ the nice stuff. I intentionally left out let-flow.
 
 It also adds a few interesting features that CompletableFutures
 support out of the box, for instance per "step" executor
-configuration, cancellation. Futures realization by default run on
-Thread/currentThread but you can also specify a custom executor.
+configuration, cancellation.
+
+Futures realization by default runs on Thread/currentThread but you can
+also specify a custom executor.
 
 You can also use a `qbits.auspex/future` as replacement of
 `clojure.core/future` via `(a/future (fn [] ::foo) executor)` it would
