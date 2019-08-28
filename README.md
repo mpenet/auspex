@@ -2,7 +2,7 @@
 
 It's a wip/experiment for now, expect breakage.
 
-A small wrapper over java11 `CompletableFuture` that mimics most of
+A small wrapper over java-11 `CompletableFuture` that mimics most of
 [manifold](https://github.com/ztellman/manifold) `deferred` API,
 including `chain`, `catch`, `finally`, `loop/recur`, `zip` and most of
 the nice stuff. I intentionally left out let-flow.
@@ -12,19 +12,20 @@ support out of the box, for instance per "step" executor
 configuration, cancellation. Futures realization by default run on
 Thread/currentThread but you can also specify a custom executor.
 
-You can also use a future as replacement of clojure future via
-`(a/future (fn [] ::foo) executor)` it would then run on whatever
-ExecutorService you'd choose (there's some sugar for that on
-`qbits.auspex.executor`).
+You can also use a `qbits.auspex/future` as replacement of
+`clojure.core/future` via `(a/future (fn [] ::foo) executor)` it would
+then run on whatever ExecutorService you'd choose (there's some sugar
+for that on `qbits.auspex.executor`).
 
-Performance:
+## Performance
+
 First indication is that it's quite a bit faster/more efficient already (I
 have yet to demonstrate that clearly, but first numbers are
 promising).
 
 ## Usage
 
-Some examples of usage
+Some examples
 
 ```clj
 (require '[qbits.auspex :as a])
@@ -48,6 +49,15 @@ Some examples of usage
   (a/success! f ::foo)
 
   ;; prints nil ::foo
+  )
+
+
+(let [f (-> (a/future (fn [] 0))
+            (a/then inc)
+            (a/then inc))]
+
+  @f
+  ;; returns 2
   )
 
 (let [f (-> (a/future (fn [] 0))
