@@ -29,6 +29,10 @@ First indication is that it's quite a bit faster/more efficient already (I
 have yet to demonstrate that clearly, but first numbers are
 promising).
 
+## Docs
+
+[Api docs](https://mpenet.github.io/auspex/index.html)
+
 ## Usage
 
 Some examples
