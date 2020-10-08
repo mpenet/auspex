@@ -33,17 +33,17 @@
 (def timeout! p/-timeout!)
 
 (defn future
-  "No arg creates an empty/incomplete future 1 arg creates a future that
-  will get the return value of f as realized value 2 arg creates a
-  future that will be realized on ExecutorService supplied with
-  return value of f as realized value.
+  "No arg creates an empty/incomplete future, 1 arg creates a future
+  that will get the return value of f as realized value on fork-join
+  common pool, 2 arg creates a future that will be realized on
+  ExecutorService supplied with return value of f as realized value.
 
   The executor that is set at this stage will continue to be used for
   subsequent steps (then/chain etc) if another one is not specified at
   another level"
   ([] (CompletableFuture.))
   ([f]
-   (future f (executor/current-thread-executor)))
+   (CompletableFuture/supplyAsync (f/supplier f)))
   ([f executor]
    (CompletableFuture/supplyAsync (f/supplier f)
                                   executor)))
