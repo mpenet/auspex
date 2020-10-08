@@ -4,6 +4,7 @@
   code/ideas from the awesome manifold library."
   (:refer-clojure :exclude [future future? realized? loop recur])
   (:require [qbits.auspex :as a]
+            [qbits.auspex.executor :as executor]
             [qbits.auspex.function :as f]
             qbits.auspex.impl
             [qbits.auspex.protocols :as p])
@@ -191,7 +192,7 @@
                 `(~return (do ~@body))
                 (reverse steps-pairs)))))
 
-(def ^:private future-m
+(def future-m
   {:return identity
    :bind chain
    :zero identity})
