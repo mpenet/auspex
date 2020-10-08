@@ -156,6 +156,14 @@ Some examples
                %)))
 ;; returns 5
 
+@(a/let-flow [x (a/future (fn [] 0))
+              :when (= x 0)
+              y (+ x 1)
+              z (a/future (fn [] (inc y)))]
+  [x y z])
+
+;; return [0 1 2]
+
 ```
 
 ## Installation
