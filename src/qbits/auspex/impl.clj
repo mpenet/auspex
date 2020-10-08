@@ -50,14 +50,14 @@
 
   (-handle
     ([cs f]
-     (p/-handle cs f (executor/current-thread-executor)))
+     (.handle cs (f/bifunction f)))
     ([cs f executor]
      (.handleAsync cs
                    (f/bifunction f)
                    ^Executor executor)))
   (-then
     ([cs f]
-     (p/-then cs f (executor/current-thread-executor)))
+     (.thenApply cs (f/function f)))
     ([cs f executor]
      (.thenApplyAsync cs
                       (f/function f)
@@ -65,7 +65,7 @@
 
   (-fmap
     ([cs f]
-     (p/-fmap cs f (executor/current-thread-executor)))
+     (.thenCompose cs (f/function f)))
     ([cs f executor]
      (.thenComposeAsync cs
                         (f/function f)
@@ -73,7 +73,7 @@
 
   (-when-complete
     ([cf f]
-     (p/-when-complete cf f (executor/current-thread-executor)))
+     (.whenComplete cf (f/biconsumer f)))
     ([cf f executor]
      (.whenCompleteAsync cf
                          (f/biconsumer f)

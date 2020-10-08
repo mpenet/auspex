@@ -41,9 +41,9 @@
          @(-> (a/future)
               (a/cancel!)
               (a/catch
-                  (fn [ce]
-                    (when (instance? CancellationException ce)
-                      ::foo)))))))
+               (fn [ce]
+                 (when (instance? CancellationException ce)
+                   ::foo)))))))
 
 (deftest timeout-test
   (is (thrown? ExecutionException
@@ -74,18 +74,18 @@
                   (a/error! ex))))
 
   (is (a/error? (doto (a/future)
-                    (a/error! ex))))
+                  (a/error! ex))))
 
   (is (= ::foo
          @(-> (doto (a/future)
-                  (a/error! ex))
+                (a/error! ex))
               (a/catch (fn [_] ::foo)))))
 
   (is (= ::foo
          @(-> (doto (a/future)
-                  (a/error! ex))
+                (a/error! ex))
               (a/catch ExceptionInfo
-                  (fn [_] ::foo)))))
+                       (fn [_] ::foo)))))
 
   (is (thrown? ExecutionException
                @(-> (a/future (fn [] (throw (Exception. "meh")))
@@ -94,7 +94,7 @@
 
   (let [p (promise)]
     @(-> (doto (a/future)
-             (a/error! ex))
+           (a/error! ex))
          (a/catch ExceptionInfo (fn [_] ::foox))
          (a/finally (fn [] (deliver p ::bar))))
     (is (= ::bar @p)))
@@ -134,7 +134,7 @@
 
 (deftest consume-test
   (let [fs [(a/success-future 1) (a/success-future 2) (a/success-future 3)]]
-    (is (seq  @(a/zip fs)))
+    (is (seq @(a/zip fs)))
     (is (every? a/realized? fs)))
   (is (= 1 @(a/one (a/success-future 1)
                    (a/success-future 2)
@@ -160,7 +160,7 @@
 
   (let [p (promise)
         f (doto (a/future)
-                (a/error! ex))]
+            (a/error! ex))]
     (a/handle f
               (fn [x err]
                 (deliver p err))
@@ -296,10 +296,30 @@
                             (a/recur %)
                             %))
                 (a/catch ExceptionInfo
-                    (fn [_] ::foo))))))
+                         (fn [_] ::foo))))))
 
   (testing "loop vars destructuring"
     (is (= 1 @(a/loop [{:keys [a]} {:a 1}] a)))
     (is @(a/loop [[x & xs] [1 2 3]] (or (= x 3) (a/recur xs))))))
+
+(deftest let-flow-test
+  (is (= 1
+         @(a/let-flow [x 1]
+                      x)))
+
+  (is (= 1
+         @(a/let-flow [x (a/future (fn [] 1))]
+                      x)))
+
+  (is (= 2
+         @(a/let-flow [x (a/future (fn [] 1))]
+                      (inc x))))
+
+  (is (= [0 1 2]
+         @(a/let-flow [x (a/future (fn [] 0))
+                       :when (= x 0)
+                       y (+ x 1)
+                       z (a/future (fn [] (inc y)))]
+                      [x y z]))))
 
 #_(run-tests)

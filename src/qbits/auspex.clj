@@ -3,10 +3,10 @@
   few utility functions to mimic manifold features.  Shamelessly stole
   code/ideas from the awesome manifold library."
   (:refer-clojure :exclude [future future? realized? loop recur])
-  (:require [qbits.auspex.protocols :as p]
+  (:require [qbits.auspex :as a]
             [qbits.auspex.function :as f]
-            [qbits.auspex.executor :as executor]
-            [qbits.auspex.impl :as impl])
+            qbits.auspex.impl
+            [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
 (set! *warn-on-reflection* true)
@@ -39,7 +39,7 @@
 
   The executor that is set at this stage will continue to be used for
   subsequent steps (then/chain etc) if another one is not specified at
-  another level."
+  another level"
   ([] (CompletableFuture.))
   ([f]
    (future f (executor/current-thread-executor)))
@@ -173,3 +173,36 @@
         result#
         ~@vals)
        result#)))
+
+(defmacro do->
+  "Utility macro to build monadic like constructs like `let-flow`"
+  [m-specs steps & body]
+  (let [steps-pairs (partition 2 steps)
+        bind (gensym "bind")
+        return (gensym "return")
+        zero (gensym "zero")]
+    `(let [~bind (:bind ~m-specs)
+           ~return (:return ~m-specs)
+           ~zero (:zero ~m-specs)]
+       ~(reduce (fn [m [x f]]
+                  (case x
+                    :when `(if ~f ~m (~zero (~return nil)))
+                    `(~bind ~f (fn [~x] ~m))))
+                `(~return (do ~@body))
+                (reverse steps-pairs)))))
+
+(def ^:private future-m
+  {:return identity
+   :bind chain
+   :zero identity})
+
+(defmacro let-flow
+  "Like let-flow but supports :when.
+  ```
+  (let-flow [x (future (fn [] 0))
+           :when (= x 0)
+           y (+ x 1)
+           z (future (fn [] (inc y)))]
+  [x y z])```"
+  [steps & body]
+  `(do-> future-m ~steps ~@body))

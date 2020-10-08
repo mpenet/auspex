@@ -18,6 +18,27 @@
   []
   (ForkJoinPool/commonPool))
 
+(defn work-stealing-executor
+  "Creates a thread pool that maintains enough threads to support the
+  given parallelism level, and may use multiple queues to reduce
+  contention. Arity 1 will have parallelism = available processors"
+  ([]
+   (Executors/newWorkStealingPool))
+  ([parallelism]
+   (Executors/newWorkStealingPool (int parallelism))))
+
+(defn cached-executor
+  "Creates a thread pool that creates new threads as needed, but will
+  reuse previously constructed threads when they are available"
+  []
+  (Executors/newCachedThreadPool))
+
+(defn single-executor
+  "Creates an Executor that uses a single worker thread operating off an
+  unbounded queue."
+  []
+  (Executors/newSingleThreadExecutor))
+
 (defn fixed-size-executor
   "Returns a new fixed size executor of size `num-threads`."
   [{:keys [num-threads thread-factory]
@@ -29,3 +50,8 @@
   "Returns the thread pool used by clojure.core/future."
   []
   (clojure.lang.Agent/soloExecutor))
+
+(defn current-thread
+  "Returns current thread"
+  []
+  (Thread/currentThread))

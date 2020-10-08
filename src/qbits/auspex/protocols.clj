@@ -6,7 +6,7 @@
   (-error! [cf t]
     "If not already completed, set error value to the given
     exception.")
-  (-complete! [cf f executor]
+  (-complete! [cf f] [cf f executor]
     "If not already completed, sets the value to the f return value.")
   (-realized? [cf] "Returns true if future is realized.")
   (-error? [cf] "Returns true if future is in error state.")
@@ -18,7 +18,7 @@
      CompletableFuture completes normally, then the returned
      CompletableFuture also completes normally with the same value.  3
      arg version allows to catch a specific error-class only and let
-     others error." )
+     others error.")
   (-finally [cf f] [cf f executor]
     "Runs side-effectful code after completion, returns original
     future value.")
@@ -32,7 +32,7 @@
   (-fmap [cf f] [cf f executor]
     "Runs f, fn returning a future, on future result and returns a new
     future with result.")
-  (-when-complete [cf f ] [cf f executor]
+  (-when-complete [cf f] [cf f executor]
     "Returns a new future with the same result or exception as this
      stage, that executes the given action using this stage's default
      asynchronous execution facility when this stage completes."))

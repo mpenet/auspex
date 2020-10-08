@@ -19,6 +19,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies ~(deps)
   :source-paths ["src"]
+  :cljfmt {:remove-multiple-non-indenting-spaces? true}
   :plugins [[lein-codox "0.10.7"]]
   :codox {:output-path "docs"}
   :global-vars {*warn-on-reflection* true})
