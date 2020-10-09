@@ -9,7 +9,6 @@
 
 (set! *warn-on-reflection* true)
 
-
 (defn relevant-ex
   [ex]
   (cond-> ex
@@ -46,7 +45,8 @@
 
   (-finally
     ([cf f]
-     (p/-finally cf f (executor/current-thread-executor)))
+     (p/-when-complete cf
+                       (fn [_ _] (f)))
     ([cf f executor]
      (p/-when-complete cf
                        (fn [_ _] (f))
