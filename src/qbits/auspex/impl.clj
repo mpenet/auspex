@@ -9,6 +9,14 @@
 
 (set! *warn-on-reflection* true)
 
+
+(defn relevant-ex
+  [ex]
+  (cond-> ex
+    (or (instance? ExecutionException ex)
+        (instance? CompletionException ex))
+    ex-cause))
+
 (extend-type CompletableFuture
   p/Future
   (-success! [cf x]
@@ -27,15 +35,11 @@
 
   (-catch
     ([cf f]
-     (.exceptionally cf (f/function f)))
+     (.exceptionally cf (f/function #(f (relevant-ex %)))))
     ([cf error-class f]
      (.exceptionally cf
                      (f/function (fn [^Throwable t]
-                                   (let [ex (cond-> t
-                                              ;; unwrap cause exception? or it's a bad idea?
-                                              (or (instance? ExecutionException t)
-                                                  (instance? CompletionException t))
-                                              ex-cause)]
+                                   (let [ex (relevant-ex t)]
                                      (if (instance? error-class ex)
                                        (f ex)
                                        (throw ex))))))))
