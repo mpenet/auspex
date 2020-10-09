@@ -10,7 +10,7 @@
 (set! *warn-on-reflection* true)
 
 (extend-type CompletableFuture
-  p/IFuture
+  p/Future
   (-success! [cf x]
     (.complete cf x))
 
@@ -82,7 +82,7 @@
   (-realized? [cf]
     (.isDone cf))
 
-  p/ICancel
+  p/Cancel
   (-cancel! [cf]
     (.cancel cf true)
     cf)
@@ -90,7 +90,7 @@
   (-canceled? [cf]
     (.isCancelled cf))
 
-  p/ITimeout
+  p/Timeout
   (-timeout!
     ([cf timeout-ms]
      (.orTimeout cf

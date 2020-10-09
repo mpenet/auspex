@@ -1,6 +1,6 @@
 (ns qbits.auspex.protocols)
 
-(defprotocol IFuture
+(defprotocol Future
   (-success! [cf x]
     "Sets the success value of future to x.")
   (-error! [cf t]
@@ -37,7 +37,7 @@
      stage, that executes the given action using this stage's default
      asynchronous execution facility when this stage completes."))
 
-(defprotocol ICancel
+(defprotocol Cancel
   (-canceled? [cf]
     "Returns true if this CompletableFuture was cancelled before it
   completed normally.")
@@ -45,7 +45,7 @@
     "If not already completed, completes this CompletableFuture with a
   CancellationException."))
 
-(defprotocol ITimeout
+(defprotocol Timeout
   (-timeout! [cf timeout-ms] [cf timeout-ms timeout-val]
     "Exceptionally completes this CompletableFuture with a
      TimeoutException if not otherwise completed before the given

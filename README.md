@@ -31,7 +31,7 @@ promising).
 
 ## Docs
 
-[Api docs](https://mpenet.github.io/auspex/index.html)
+[![cljdoc badge](https://cljdoc.xyz/badge/cc.qbits/auspex)](https://cljdoc.xyz/d/cc.qbits/auspex/CURRENT)
 
 ## Usage
 
