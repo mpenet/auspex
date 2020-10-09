@@ -175,35 +175,13 @@
         ~@vals)
        result#)))
 
-(defmacro do->
-  "Utility macro to build monadic like constructs like `let-flow`"
-  [m-specs steps & body]
-  (let [steps-pairs (partition 2 steps)
-        bind (gensym "bind")
-        return (gensym "return")
-        zero (gensym "zero")]
-    `(let [~bind (:bind ~m-specs)
-           ~return (:return ~m-specs)
-           ~zero (:zero ~m-specs)]
-       ~(reduce (fn [m [x f]]
-                  (case x
-                    :when `(if ~f ~m (~zero (~return nil)))
-                    `(~bind ~f (fn [~x] ~m))))
-                `(~return (do ~@body))
-                (reverse steps-pairs)))))
-
-(def future-m
-  {:return identity
-   :bind chain
-   :zero identity})
-
 (defmacro let-flow
-  "Like let-flow but supports :when.
-  ```
-  (let-flow [x (future (fn [] 0))
-           :when (= x 0)
-           y (+ x 1)
-           z (future (fn [] (inc y)))]
-  [x y z])```"
+  "manifold.`let-flow` port"
   [steps & body]
-  `(do-> future-m ~steps ~@body))
+  (let [steps-pairs (partition 2 steps)        ]
+    (reduce (fn [step [x f]]
+              (case x
+                :when `(when ~f ~step)
+                `(chain ~f (fn [~x] ~step))))
+            `(do ~@body)
+            (reverse steps-pairs))))
