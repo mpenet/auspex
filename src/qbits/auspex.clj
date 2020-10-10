@@ -4,9 +4,8 @@
   code/ideas from the awesome manifold library."
   (:refer-clojure :exclude [future future? realized? loop recur])
   (:require [qbits.auspex :as a]
-            [qbits.auspex.executor :as executor]
             [qbits.auspex.function :as f]
-            qbits.auspex.impl
+            [qbits.auspex.impl :as impl]
             [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
@@ -185,3 +184,5 @@
                 `(chain ~f (fn [~x] ~step))))
             `(do ~@body)
             (reverse steps-pairs))))
+
+(def ex-unwrap impl/ex-unwrap)

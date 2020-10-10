@@ -1,7 +1,6 @@
 (ns qbits.auspex.impl
   (:require [qbits.auspex.protocols :as p]
-            [qbits.auspex.function :as f]
-            [qbits.auspex.executor :as executor])
+            [qbits.auspex.function :as f])
   (:import (java.util.concurrent CompletableFuture
                                  Executor
                                  CompletionException
@@ -9,12 +8,13 @@
 
 (set! *warn-on-reflection* true)
 
-(defn relevant-ex
+(defn ex-unwrap
+  "Unwraps exceptions if we have a valid ex-cause present"
   [ex]
-  (cond-> ex
-    (or (instance? ExecutionException ex)
-        (instance? CompletionException ex))
-    ex-cause))
+  (if (or (instance? ExecutionException ex)
+          (instance? CompletionException ex))
+    (or (ex-cause ex) ex)
+    ex))
 
 (extend-type CompletableFuture
   p/Future
@@ -34,11 +34,11 @@
 
   (-catch
     ([cf f]
-     (.exceptionally cf (f/function #(f (relevant-ex %)))))
+     (.exceptionally cf (f/function #(f (ex-unwrap %)))))
     ([cf error-class f]
      (.exceptionally cf
                      (f/function (fn [^Throwable t]
-                                   (let [ex (relevant-ex t)]
+                                   (let [ex (ex-unwrap t)]
                                      (if (instance? error-class ex)
                                        (f ex)
                                        (throw ex))))))))
@@ -46,7 +46,7 @@
   (-finally
     ([cf f]
      (p/-when-complete cf
-                       (fn [_ _] (f)))
+                       (fn [_ _] (f))))
     ([cf f executor]
      (p/-when-complete cf
                        (fn [_ _] (f))
