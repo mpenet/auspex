@@ -185,7 +185,10 @@
             `(do ~@body)
             (reverse steps-pairs))))
 
-(def ex-unwrap impl/ex-unwrap)
+(def ex-unwrap
+  "Takes input exception and return the original exception cause (if
+  any). This unwraps `ExecutionException` and `CompletionException`"
+  impl/ex-unwrap)
 
 (defn unwrap
   "Tries to deref a Future, returns a value upon completion or the
