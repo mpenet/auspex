@@ -1,13 +1,20 @@
 (ns qbits.auspex.impl
   (:require [qbits.auspex.protocols :as p]
-            [qbits.auspex.function :as f]
-            [qbits.auspex.executor :as executor])
+            [qbits.auspex.function :as f])
   (:import (java.util.concurrent CompletableFuture
                                  Executor
                                  CompletionException
                                  ExecutionException)))
 
 (set! *warn-on-reflection* true)
+
+(defn ex-unwrap
+  "Unwraps exceptions if we have a valid ex-cause present"
+  [ex]
+  (if (or (instance? ExecutionException ex)
+          (instance? CompletionException ex))
+    (or (ex-cause ex) ex)
+    ex))
 
 (extend-type CompletableFuture
   p/Future
@@ -27,22 +34,19 @@
 
   (-catch
     ([cf f]
-     (.exceptionally cf (f/function f)))
+     (.exceptionally cf (f/function #(f (ex-unwrap %)))))
     ([cf error-class f]
      (.exceptionally cf
                      (f/function (fn [^Throwable t]
-                                   (let [ex (cond-> t
-                                              ;; unwrap cause exception? or it's a bad idea?
-                                              (or (instance? ExecutionException t)
-                                                  (instance? CompletionException t))
-                                              ex-cause)]
+                                   (let [ex (ex-unwrap t)]
                                      (if (instance? error-class ex)
                                        (f ex)
                                        (throw ex))))))))
 
   (-finally
     ([cf f]
-     (p/-finally cf f (executor/current-thread-executor)))
+     (p/-when-complete cf
+                       (fn [_ _] (f))))
     ([cf f executor]
      (p/-when-complete cf
                        (fn [_ _] (f))

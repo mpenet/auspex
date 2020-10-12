@@ -73,6 +73,11 @@
                @(doto (a/future)
                   (a/error! ex))))
 
+  (is (thrown? ExceptionInfo
+               (a/unwrap
+                (doto (a/future)
+                  (a/error! ex)))))
+
   (is (a/error? (doto (a/future)
                   (a/error! ex))))
 
@@ -85,7 +90,7 @@
          @(-> (doto (a/future)
                 (a/error! ex))
               (a/catch ExceptionInfo
-                       (fn [_] ::foo)))))
+                  (fn [_] ::foo)))))
 
   (is (thrown? ExecutionException
                @(-> (a/future (fn [] (throw (Exception. "meh")))
@@ -321,5 +326,3 @@
                        y (+ x 1)
                        z (a/future (fn [] (inc y)))]
                       [x y z]))))
-
-#_(run-tests)
