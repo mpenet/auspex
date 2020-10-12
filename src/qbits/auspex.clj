@@ -186,3 +186,13 @@
             (reverse steps-pairs))))
 
 (def ex-unwrap impl/ex-unwrap)
+
+(defn unwrap
+  "Tries to deref a Future, returns a value upon completion or the
+  original exception that triggered exceptional termination (as
+  opposed to a wrapped exception)"
+  [f]
+  (try
+    @f
+    (catch Exception e
+      (throw (ex-unwrap e)))))
