@@ -177,7 +177,7 @@
 (defmacro let-flow
   "manifold.`let-flow` port"
   [steps & body]
-  (let [steps-pairs (partition 2 steps)        ]
+  (let [steps-pairs (partition 2 steps)]
     (reduce (fn [step [x f]]
               (case x
                 :when `(when ~f ~step)

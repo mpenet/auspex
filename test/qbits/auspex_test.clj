@@ -90,7 +90,7 @@
          @(-> (doto (a/future)
                 (a/error! ex))
               (a/catch ExceptionInfo
-                  (fn [_] ::foo)))))
+                       (fn [_] ::foo)))))
 
   (is (thrown? ExecutionException
                @(-> (a/future (fn [] (throw (Exception. "meh")))
