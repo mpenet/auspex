@@ -21,12 +21,6 @@ execution context of the previous step.  So if you specify an executor
 at a level be aware that subsequent levels will re-use it unless you
 specify otherwise.
 
-## Performance
-
-First indication is that it's quite a bit faster/more efficient already (I
-have yet to demonstrate that clearly, but first numbers are
-promising).
-
 ## Docs
 
 [![cljdoc badge](https://cljdoc.xyz/badge/cc.qbits/auspex)](https://cljdoc.xyz/d/cc.qbits/auspex/CURRENT)
