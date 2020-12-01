@@ -1,11 +1,9 @@
 # auspex
 
-It's a wip/experiment for now, expect breakage.
-
-A small wrapper over java-11 `CompletableFuture` that mimics most of
-[manifold](https://github.com/ztellman/manifold) `deferred` API,
-including `chain`, `catch`, `finally`, `loop/recur`, `zip`, `let-flow`
-and most of the nice stuff.
+Auspex is small wrapper over java-11+ `CompletableFuture` that mimics
+most of [manifold](https://github.com/ztellman/manifold) `deferred`
+API, including `chain`, `catch`, `finally`, `loop/recur`, `zip`,
+`let-flow` and most of the nice stuff.
 
 `future` here represents the result of an asynchronous computation
 (promise), so more in the java sense than `clojure.core/future` (which
