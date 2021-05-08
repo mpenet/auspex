@@ -93,25 +93,52 @@
   [x & fs]
   (reduce fmap (wrap x) fs))
 
+(defn any'
+  "Like `any` but faster if you know you're only dealing with future args"
+  [fs]
+  (CompletableFuture/anyOf (into-array CompletableFuture fs)))
+
+(defn any
+  "Returns one value from a collection of futures"
+  [xs]
+  (any' (map wrap xs)))
+
+(defn one'
+  "Like `one` but faster if you know you're only dealing with future args"
+  [& fs]
+  (any' fs))
+
 (defn one
   "Returns one value from a list of futures"
-  [& cfs]
-  (CompletableFuture/anyOf (into-array CompletableFuture
-                                       cfs)))
+  [& xs]
+  (any' (map wrap xs)))
+
+
+(defn all'
+  "Like `all` buf faster if you know you're only dealing with futures
+  args"
+  [fs]
+  (-> (CompletableFuture/allOf (into-array CompletableFuture fs))
+      (then (fn [_]
+              (map deref fs)))))
+
+(defn all
+  "Takes a collection of values, some of which may be futures, and
+   returns a future that will contain a list of realized values"
+  [xs]
+  (all' (map wrap xs)))
+
 (defn zip'
   "Like zip but faster if you know you're only dealing with futures
   args"
   [& fs]
-  (-> (CompletableFuture/allOf (into-array CompletableFuture
-                                           fs))
-      (then (fn [_]
-              (map deref fs)))))
+  (all' fs))
 
 (defn zip
   "Takes a list of values, some of which can be futures and returns a
   future that will contains a list of realized values"
   [& xs]
-  (apply zip' (map wrap xs)))
+  (all' (map wrap xs)))
 
 (deftype Recur [args]
   clojure.lang.IDeref

@@ -326,3 +326,14 @@
                        y (+ x 1)
                        z (a/future (fn [] (inc y)))]
                       [x y z]))))
+
+(defn future-val
+  [x]
+  (a/future (constantly x)))
+
+(deftest all-any-test
+  (are [pred result f input] (pred result (deref (f input)))
+    =         [1 2 3]  a/all  [1 2 3]
+    =         [1 2 3]  a/all' (map future-val [1 2 3])
+    contains? #{1 2 3} a/any  [1 2 3]
+    contains? #{1 2 3} a/any' (map future-val [1 2 3])))
