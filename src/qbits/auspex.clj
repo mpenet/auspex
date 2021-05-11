@@ -113,7 +113,6 @@
   [& xs]
   (any' (map wrap xs)))
 
-
 (defn all'
   "Like `all` buf faster if you know you're only dealing with futures
   args"
