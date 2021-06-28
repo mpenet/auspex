@@ -18,20 +18,27 @@
 
 (extend-type CompletableFuture
   p/Future
+  (-future [cf] cf)
+
+  p/Success!
   (-success! [cf x]
     (.complete cf x))
 
+  p/Error!
   (-error! [cf e]
     (.completeExceptionally cf e))
 
+  p/Complete!
   (-complete! [cf f executor]
     (.completeAsync cf
                     (f/supplier f)
                     ^Executor executor))
 
+  p/Error?
   (-error? [cf]
     (.isCompletedExceptionally cf))
 
+  p/Catch
   (-catch
     ([cf f]
      (.exceptionally cf (f/function #(f (ex-unwrap %)))))
@@ -42,7 +49,7 @@
                                      (if (instance? error-class ex)
                                        (f ex)
                                        (throw ex))))))))
-
+  p/Finally
   (-finally
     ([cf f]
      (p/-when-complete cf
@@ -51,7 +58,7 @@
      (p/-when-complete cf
                        (fn [_ _] (f))
                        ^Executor executor)))
-
+  p/Handle
   (-handle
     ([cs f]
      (.handle cs (f/bifunction f)))
@@ -59,6 +66,8 @@
      (.handleAsync cs
                    (f/bifunction f)
                    ^Executor executor)))
+
+  p/Then
   (-then
     ([cs f]
      (.thenApply cs (f/function f)))
@@ -66,7 +75,7 @@
      (.thenApplyAsync cs
                       (f/function f)
                       ^Executor executor)))
-
+  p/FMap
   (-fmap
     ([cs f]
      (.thenCompose cs (f/function f)))
@@ -74,7 +83,7 @@
      (.thenComposeAsync cs
                         (f/function f)
                         ^Executor executor)))
-
+  p/WhenComplete
   (-when-complete
     ([cf f]
      (.whenComplete cf (f/biconsumer f)))
@@ -82,19 +91,20 @@
      (.whenCompleteAsync cf
                          (f/biconsumer f)
                          ^Executor executor)))
-
+  p/Realized?
   (-realized? [cf]
     (.isDone cf))
 
-  p/Cancel
+  p/Cancel!
   (-cancel! [cf]
     (.cancel cf true)
     cf)
 
+  p/Canceled?
   (-canceled? [cf]
     (.isCancelled cf))
 
-  p/Timeout
+  p/Timeout!
   (-timeout!
     ([cf timeout-ms]
      (.orTimeout cf
@@ -105,3 +115,7 @@
                          timeout-val
                          timeout-ms
                          java.util.concurrent.TimeUnit/MILLISECONDS))))
+
+(extend-protocol p/Future
+  Object
+  (-future [x] (CompletableFuture/completedFuture x)))

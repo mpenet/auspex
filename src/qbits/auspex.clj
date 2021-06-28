@@ -12,24 +12,24 @@
 (set! *warn-on-reflection* true)
 
 ;;; IFuture
-(def error! p/-error!)
-(def error? p/-error?)
-(def catch p/-catch)
-(def finally p/-finally)
-(def complete! p/-complete!)
-(def success! p/-success!)
-(def realized? p/-realized?)
-(def handle p/-handle)
-(def then p/-then)
-(def fmap p/-fmap)
-(def when-complete p/-when-complete)
+(def error! #'p/-error!)
+(def error? #'p/-error?)
+(def catch #'p/-catch)
+(def finally #'p/-finally)
+(def complete! #'p/-complete!)
+(def success! #'p/-success!)
+(def realized? #'p/-realized?)
+(def handle #'p/-handle)
+(def then #'p/-then)
+(def fmap #'p/-fmap)
+(def when-complete #'p/-when-complete)
 
 ;;; ICancel
-(def cancel! p/-cancel!)
-(def canceled? p/-canceled?)
+(def cancel! #'p/-cancel!)
+(def canceled? #'p/-canceled?)
 
 ;;; ITimeout
-(def timeout! p/-timeout!)
+(def timeout! #'p/-timeout!)
 
 (defn future
   "No arg creates an empty/incomplete future, 1 arg creates a future
@@ -66,9 +66,7 @@
 
 (defn- wrap
   [x]
-  (cond-> x
-    (not (future? x))
-    success-future))
+  (p/-future x))
 
 (defn chain'
   "Like chain but assumes fns return raw values instead of potential
