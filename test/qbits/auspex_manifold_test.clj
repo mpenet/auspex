@@ -265,7 +265,6 @@
                       (fn [y]
                         (a/chain (d/chain y
                                           (fn [_]
-                                            (prn y)
                                             (inc y)))
                                  (fn [z] [x y z])))))))
 

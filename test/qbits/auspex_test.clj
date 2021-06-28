@@ -179,7 +179,6 @@
   (is (= 11 @(-> (a/success-future 1)
                  (a/then (fn [_] (throw ex)))
                  (a/catch (fn [ex]
-                            ;; (prn :X (type ex))
                             10))
                  (a/then inc))))
 
