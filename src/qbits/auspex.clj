@@ -11,7 +11,6 @@
 
 (set! *warn-on-reflection* true)
 
-;;; IFuture
 (def error! #'p/-error!)
 (def error? #'p/-error?)
 (def catch #'p/-catch)
@@ -23,12 +22,8 @@
 (def then #'p/-then)
 (def fmap #'p/-fmap)
 (def when-complete #'p/-when-complete)
-
-;;; ICancel
 (def cancel! #'p/-cancel!)
 (def canceled? #'p/-canceled?)
-
-;;; ITimeout
 (def timeout! #'p/-timeout!)
 
 (defn future
@@ -59,14 +54,13 @@
   (CompletableFuture/failedFuture x))
 
 (defn future?
-  "Returns true if x is a CompletableFuture"
+  "Returns true if x is a Future (in auspex sense)"
   [x]
-  ;; satisfies is (still) horribly slow sadly
-  (instance? CompletableFuture x))
+  (satisfies? p/Future x))
 
 (defn- wrap
   [x]
-  (p/-future x))
+  (p/-wrap x))
 
 (defn chain'
   "Like chain but assumes fns return raw values instead of potential

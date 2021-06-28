@@ -42,11 +42,10 @@
 (defprotocol Realized?
   (-realized? [_]))
 
-(defprotocol Chain
-  (-chain [_ f] [_ f executor]))
-
 (defprotocol WhenComplete
   (-when-complete [_ f] [_ f executor]))
 
-(defprotocol Future
-  (-future [x]))
+(defprotocol Wrap
+  (-wrap [x]))
+
+(defprotocol Future)

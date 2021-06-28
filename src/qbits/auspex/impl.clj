@@ -17,8 +17,11 @@
     ex))
 
 (extend-type CompletableFuture
+
   p/Future
-  (-future [cf] cf)
+
+  p/Wrap
+  (-wrap [cf] cf)
 
   p/Success!
   (-success! [cf x]
@@ -116,6 +119,6 @@
                          timeout-ms
                          java.util.concurrent.TimeUnit/MILLISECONDS))))
 
-(extend-protocol p/Future
+(extend-protocol p/Wrap
   Object
-  (-future [x] (CompletableFuture/completedFuture x)))
+  (-wrap [x] (CompletableFuture/completedFuture x)))
