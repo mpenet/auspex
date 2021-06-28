@@ -1,5 +1,5 @@
 (ns qbits.auspex.manifold
-  (:require [qbits.auspex.protocols :as p]
+  (:require [qbits.xi.protocols :as p]
             [manifold.deferred :as d])
   (:import (java.util.concurrent CompletableFuture)))
 

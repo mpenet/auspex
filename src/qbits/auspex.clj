@@ -6,7 +6,7 @@
   (:require [qbits.auspex :as a]
             [qbits.auspex.function :as f]
             [qbits.auspex.impl :as impl]
-            [qbits.auspex.protocols :as p])
+            [qbits.xi.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
 (set! *warn-on-reflection* true)

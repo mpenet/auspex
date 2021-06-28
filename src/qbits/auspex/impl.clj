@@ -1,5 +1,5 @@
 (ns qbits.auspex.impl
-  (:require [qbits.auspex.protocols :as p]
+  (:require [qbits.xi.protocols :as p]
             [qbits.auspex.function :as f])
   (:import (java.util.concurrent CompletableFuture
                                  Executor
