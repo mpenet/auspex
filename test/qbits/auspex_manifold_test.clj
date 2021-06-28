@@ -183,13 +183,13 @@
                      inc
                      inc)))
 
-  ;; (is (= 3 @(a/chain-futures (d/success-deferred 1)
-  ;;                            f-inc
-  ;;                            f-inc)))
+  (is (= 3 @(a/chain-futures (d/success-deferred 1)
+                             f-inc
+                             f-inc)))
 
-  ;; (is (= 3 @(a/chain-futures 1
-  ;;                            f-inc
-  ;;                            f-inc)))
+  (is (= 3 @(a/chain-futures 1
+                             f-inc
+                             f-inc)))
 
   (is (= 6 @(a/chain (d/success-deferred 1)
                      inc
