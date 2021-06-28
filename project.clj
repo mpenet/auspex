@@ -1,4 +1,4 @@
-(defproject cc.qbits/auspex "0.1.0-alpha6-SNAPSHOT"
+(defproject cc.qbits/auspex "1.0.0-alpha1-SNAPSHOT"
   :description "Mini wrapper over java-11 CompletableFuture with a manifold deferred after-taste"
   :url "https://github.com/mpenet/auspex"
   :deploy-repositories [["snapshots" :clojars] ["releases" :clojars]]
