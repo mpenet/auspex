@@ -3,6 +3,14 @@
             [manifold.deferred :as d])
   (:import (java.util.concurrent CompletableFuture)))
 
+(defn- error
+  [e]
+  (if (instance? Throwable e)
+    e
+    (ex-info (format "manifold.deferred error: %s"
+                     (ex-message e))
+             {:qbits.auspex.manifold/error e})))
+
 (extend-type manifold.deferred.IDeferred
 
   p/Future
@@ -12,7 +20,7 @@
     (let [cf (CompletableFuture.)]
       (d/on-realized x
                      #(.complete cf %)
-                     #(.completeExceptionally cf %))
+                     #(.completeExceptionally cf (error %)))
       cf))
 
   p/Success!
@@ -21,18 +29,14 @@
 
   p/Error!
   (-error! [d e]
-    (d/error! d e))
+    (d/error! d (error e)))
 
   p/Catch
   (-catch
     ([d f]
      (d/catch d
          (fn [e]
-           (f (if (instance? Throwable e)
-                e
-                (ex-info (format "manifold.deferred error: %s"
-                                 (ex-message e))
-                         {:qbits.auspex.manifold/error e}))))))
+           (f (error e)))))
     ([d error-class f]
      (d/catch d error-class f)))
 
@@ -49,7 +53,7 @@
     ([d f executor]
      (d/on-realized d
                     #(f % nil)
-                    #(f nil %))))
+                    #(f nil (error %)))))
 
   p/Then
   (-then

@@ -85,17 +85,17 @@
                            executor))))
     (is (= ::bar @p))))
 
-#_(deftest complete-test
-    (is (= ::foo @(doto (d/deferred)
-                    (a/success! ::foo))))
+(deftest complete-test
+  (is (= ::foo @(doto (d/deferred)
+                  (a/success! ::foo))))
 
-    (let [f (-> (a/future)
-                (a/complete! (fn [] (throw ex)) executor))]
-      (try @f (catch Exception e))
-      (is (a/error? f)))
+  (let [f (-> (a/future)
+              (a/complete! (fn [] (throw ex)) executor))]
+    (try @f (catch Exception e))
+    (is (a/error? f)))
 
-    (is (a/realized? (doto (a/future)
-                       (a/success! ::foo)))))
+  (is (a/realized? (doto (a/future)
+                     (a/success! ::foo)))))
 
 (deftest consume-test
   (let [fs [(d/success-deferred 1) (d/success-deferred 2) (d/success-deferred 3)]]
@@ -208,7 +208,14 @@
   (is (= [1 2 3]
          @(a/zip (d/success-deferred 1)
                  2
-                 (d/success-deferred 3)))))
+                 (d/success-deferred 3))))
+
+  (is (thrown? ExceptionInfo
+               (a/unwrap (a/chain (d/error-deferred 1)))))
+
+  (is (thrown? ExceptionInfo
+               (a/unwrap (a/chain (d/error-deferred ex))))))
+
 
 (deftest loop-recur-test
   (is (= 5
@@ -219,14 +226,14 @@
                         (a/recur %)
                         %)))))
 
-  (is (thrown? ExecutionException
-               @(a/loop [x 0]
-                  (d/chain x
-                           (fn [_] (throw ex))
-                           inc
-                           #(if (< % 5)
-                              (a/recur %)
-                              %)))))
+  (is (thrown-with-msg? ExecutionException #"boom"
+                        @(a/loop [x 0]
+                           (d/chain x
+                                    (fn [_] (throw ex))
+                                    inc
+                                    #(if (< % 5)
+                                       (a/recur %)
+                                       %)))))
   (is (= ::foo
          @(a/loop [x 0]
             (-> (d/chain x
@@ -257,16 +264,6 @@
                        y (+ x 1)
                        z (d/chain y (fn [_] (inc y)))]
                       [x y z]))))
-
-(a/chain (d/success-deferred 0)
-         (fn [x]
-           (when (= x 0)
-             (a/chain (+ x 1)
-                      (fn [y]
-                        (a/chain (d/chain y
-                                          (fn [_]
-                                            (inc y)))
-                                 (fn [z] [x y z])))))))
 
 (deftest all-any-test
   (are [pred result f input] (pred result (deref (f input)))
