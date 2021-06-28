@@ -6,30 +6,25 @@
   (:require [qbits.auspex :as a]
             [qbits.auspex.function :as f]
             [qbits.auspex.impl :as impl]
-            [qbits.auspex.protocols :as p])
+            [qbits.xi.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
 (set! *warn-on-reflection* true)
 
-;;; IFuture
-(def error! p/-error!)
-(def error? p/-error?)
-(def catch p/-catch)
-(def finally p/-finally)
-(def complete! p/-complete!)
-(def success! p/-success!)
-(def realized? p/-realized?)
-(def handle p/-handle)
-(def then p/-then)
-(def fmap p/-fmap)
-(def when-complete p/-when-complete)
-
-;;; ICancel
-(def cancel! p/-cancel!)
-(def canceled? p/-canceled?)
-
-;;; ITimeout
-(def timeout! p/-timeout!)
+(def error! #'p/-error!)
+(def error? #'p/-error?)
+(def catch #'p/-catch)
+(def finally #'p/-finally)
+(def complete! #'p/-complete!)
+(def success! #'p/-success!)
+(def realized? #'p/-realized?)
+(def handle #'p/-handle)
+(def then #'p/-then)
+(def fmap #'p/-fmap)
+(def when-complete #'p/-when-complete)
+(def cancel! #'p/-cancel!)
+(def canceled? #'p/-canceled?)
+(def timeout! #'p/-timeout!)
 
 (defn future
   "No arg creates an empty/incomplete future, 1 arg creates a future
@@ -59,16 +54,13 @@
   (CompletableFuture/failedFuture x))
 
 (defn future?
-  "Returns true if x is a CompletableFuture"
+  "Returns true if x is a Future (in auspex sense)"
   [x]
-  ;; satisfies is (still) horribly slow sadly
-  (instance? CompletableFuture x))
+  (satisfies? p/Future x))
 
 (defn- wrap
   [x]
-  (cond-> x
-    (not (future? x))
-    success-future))
+  (p/-wrap x))
 
 (defn chain'
   "Like chain but assumes fns return raw values instead of potential
