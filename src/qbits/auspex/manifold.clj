@@ -80,9 +80,6 @@
   (-realized? [d]
     (d/realized? d))
 
-  p/Canceled?
-  (-canceled? [cf] false)
-
   p/Timeout!
   (-timeout!
     ([d timeout-ms]
