@@ -1,5 +1,6 @@
 (ns qbits.auspex.manifold
   (:require [qbits.xi.protocols :as p]
+            [qbits.auspex.protocols :as ap]
             [manifold.deferred :as d])
   (:import (java.util.concurrent CompletableFuture)))
 
@@ -13,9 +14,7 @@
 
 (extend-type manifold.deferred.IDeferred
 
-  p/Future
-
-  p/Wrap
+  ap/Wrap
   (-wrap [x]
     (let [cf (CompletableFuture.)]
       (d/on-realized x
@@ -23,6 +22,7 @@
                      #(.completeExceptionally cf (error %)))
       cf))
 
+  p/Future
   p/Success!
   (-success! [d x]
     (d/success! d x))

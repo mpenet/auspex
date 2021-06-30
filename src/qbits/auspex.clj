@@ -6,6 +6,7 @@
   (:require [qbits.auspex :as a]
             [qbits.auspex.function :as f]
             [qbits.auspex.impl :as impl]
+            [qbits.auspex.protocols :as p]
             [qbits.xi :as xi])
   (:import (java.util.concurrent CompletableFuture)))
 
@@ -26,7 +27,11 @@
 (def canceled? xi/canceled?)
 (def timeout! xi/timeout!)
 (def future? xi/future?)
-(def wrap xi/wrap)
+(def wrap #'p/-wrap)
+
+(extend-protocol p/Wrap
+  Object
+  (-wrap [x] (CompletableFuture/completedFuture x)))
 
 (defn future
   "No arg creates an empty/incomplete future, 1 arg creates a future
