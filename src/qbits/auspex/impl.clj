@@ -120,6 +120,6 @@
                          timeout-ms
                          java.util.concurrent.TimeUnit/MILLISECONDS))))
 
-(extend-protocol p/Wrap
+(extend-protocol ap/Wrap
   Object
   (-wrap [x] (CompletableFuture/completedFuture x)))

@@ -5,14 +5,11 @@
             [manifold.deferred :as d])
   (:import
    (clojure.lang ExceptionInfo)
-   (java.util.concurrent
-    CancellationException
-    ExecutionException)))
+   (java.util.concurrent ExecutionException)))
 
 (def executor clojure.lang.Agent/pooledExecutor)
 (def ex (ex-info "boom" {}))
-(def f-inc #(a/future (constantly (inc %))
-                      executor))
+(def f-inc #(d/success-deferred (inc %)))
 
 (deftest create-test
   (is (a/future? (d/deferred)))
@@ -182,14 +179,6 @@
   (is (= 3 @(a/chain 1
                      inc
                      inc)))
-
-  (is (= 3 @(a/chain-futures (d/success-deferred 1)
-                             f-inc
-                             f-inc)))
-
-  (is (= 3 @(a/chain-futures 1
-                             f-inc
-                             f-inc)))
 
   (is (= 6 @(a/chain (d/success-deferred 1)
                      inc
