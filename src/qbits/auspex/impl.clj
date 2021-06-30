@@ -118,7 +118,10 @@
      (.completeOnTimeout cf
                          timeout-val
                          timeout-ms
-                         java.util.concurrent.TimeUnit/MILLISECONDS))))
+                         java.util.concurrent.TimeUnit/MILLISECONDS)))
+
+  p/Empty
+  (-empty [_] (CompletableFuture.)))
 
 (extend-protocol ap/Wrap
   Object

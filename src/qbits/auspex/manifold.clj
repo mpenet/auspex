@@ -85,4 +85,7 @@
     ([d timeout-ms]
      (d/timeout! d timeout-ms))
     ([d timeout-ms timeout-val]
-     (d/timeout! d timeout-ms timeout-val))))
+     (d/timeout! d timeout-ms timeout-val)))
+
+  p/Empty
+  (-empty [_] (d/deferred)))
