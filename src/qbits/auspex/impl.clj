@@ -1,6 +1,5 @@
 (ns qbits.auspex.impl
-  (:require [qbits.xi.protocols :as p]
-            [qbits.auspex.protocols :as ap]
+  (:require [qbits.auspex.protocols :as p]
             [qbits.auspex.function :as f])
   (:import (java.util.concurrent CompletableFuture
                                  Executor
@@ -18,9 +17,6 @@
     ex))
 
 (extend-type CompletableFuture
-
-  ap/Wrap
-  (-wrap [cf] cf)
 
   p/Future
 
@@ -120,9 +116,12 @@
                          timeout-ms
                          java.util.concurrent.TimeUnit/MILLISECONDS)))
 
+  p/Wrap
+  (-wrap [cf] cf)
+
   p/Empty
   (-empty [_] (CompletableFuture.)))
 
-(extend-protocol ap/Wrap
+(extend-protocol p/Wrap
   Object
   (-wrap [x] (CompletableFuture/completedFuture x)))

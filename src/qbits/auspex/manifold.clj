@@ -1,6 +1,5 @@
 (ns qbits.auspex.manifold
-  (:require [qbits.xi.protocols :as p]
-            [qbits.auspex.protocols :as ap]
+  (:require [qbits.auspex.protocols :as p]
             [manifold.deferred :as d])
   (:import (java.util.concurrent CompletableFuture)))
 
@@ -13,14 +12,6 @@
              {:qbits.auspex.manifold/error e})))
 
 (extend-type manifold.deferred.IDeferred
-
-  ap/Wrap
-  (-wrap [x]
-    (let [cf (CompletableFuture.)]
-      (d/on-realized x
-                     #(.complete cf %)
-                     #(.completeExceptionally cf (error %)))
-      cf))
 
   p/Future
   p/Success!
@@ -86,6 +77,14 @@
      (d/timeout! d timeout-ms))
     ([d timeout-ms timeout-val]
      (d/timeout! d timeout-ms timeout-val)))
+
+  p/Wrap
+  (-wrap [x]
+    (let [cf (CompletableFuture.)]
+      (d/on-realized x
+                     #(.complete cf %)
+                     #(.completeExceptionally cf (error %)))
+      cf))
 
   p/Empty
   (-empty [_] (d/deferred)))

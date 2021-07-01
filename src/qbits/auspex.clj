@@ -2,32 +2,35 @@
   "This provides a clj friendly wrapper for CompletableFuture and adds a
   few utility functions to mimic manifold features.  Shamelessly stole
   code/ideas from the awesome manifold library."
-  (:refer-clojure :exclude [future future? realized? loop recur])
+  (:refer-clojure :exclude [future future? realized? loop recur empty])
   (:require [qbits.auspex :as a]
             [qbits.auspex.function :as f]
             [qbits.auspex.impl :as impl]
-            [qbits.auspex.protocols :as p]
-            [qbits.xi :as xi])
+            [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
 (set! *warn-on-reflection* true)
 
-(def error! xi/error!)
-(def error? xi/error?)
-(def catch xi/catch)
-(def finally xi/finally)
-(def complete! xi/complete!)
-(def success! xi/success!)
-(def realized? xi/realized?)
-(def handle xi/handle)
-(def then xi/then)
-(def fmap xi/fmap)
-(def when-complete xi/when-complete)
-(def cancel! xi/cancel!)
-(def canceled? xi/canceled?)
-(def timeout! xi/timeout!)
-(def future? xi/future?)
+(def error! #'p/-error!)
+(def error? #'p/-error?)
+(def catch #'p/-catch)
+(def finally #'p/-finally)
+(def complete! #'p/-complete!)
+(def success! #'p/-success!)
+(def realized? #'p/-realized?)
+(def handle #'p/-handle)
+(def then #'p/-then)
+(def fmap #'p/-fmap)
+(def when-complete #'p/-when-complete)
+(def cancel! #'p/-cancel!)
+(def canceled? #'p/-canceled?)
+(def timeout! #'p/-timeout!)
 (def wrap #'p/-wrap)
+(def empty #'p/-empty)
+
+(defn future?
+  [x]
+  (satisfies? p/Future x))
 
 (defn future
   "No arg creates an empty/incomplete future, 1 arg creates a future
