@@ -123,5 +123,8 @@
   (-empty [_] (CompletableFuture.)))
 
 (extend-protocol p/Wrap
+  nil
+  (-wrap [_] (CompletableFuture/completedFuture nil))
+
   Object
   (-wrap [x] (CompletableFuture/completedFuture x)))
