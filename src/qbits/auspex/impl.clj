@@ -108,12 +108,12 @@
   (-timeout!
     ([cf timeout-ms]
      (.orTimeout cf
-                 timeout-ms
+                 (long timeout-ms)
                  java.util.concurrent.TimeUnit/MILLISECONDS))
     ([cf timeout-ms timeout-val]
      (.completeOnTimeout cf
                          timeout-val
-                         timeout-ms
+                         (long timeout-ms)
                          java.util.concurrent.TimeUnit/MILLISECONDS)))
 
   p/Wrap

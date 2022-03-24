@@ -4,7 +4,7 @@
   :deploy-repositories [["snapshots" :clojars] ["releases" :clojars]]
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.10.2"]]
+  :dependencies [[org.clojure/clojure "1.11.0"]]
   :profiles {:dev  {:dependencies [[manifold "0.1.9-alpha4"]]}}
   :source-paths ["src"]
   :cljfmt {:remove-multiple-non-indenting-spaces? true}

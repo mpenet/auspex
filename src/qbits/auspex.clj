@@ -56,7 +56,7 @@
 (defn error-future
   "Returns a new CompletableFuture that is already completed
   exceptionally with the given exception."
-  [x]
+  [^Throwable x]
   (CompletableFuture/failedFuture x))
 
 
