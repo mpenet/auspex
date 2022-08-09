@@ -26,8 +26,8 @@
   (-catch
     ([d f]
      (d/catch d
-         (fn [e]
-           (f (error e)))))
+              (fn [e]
+                (f (error e)))))
     ([d error-class f]
      (d/catch d error-class f)))
 
@@ -88,3 +88,12 @@
 
   p/Empty
   (-empty [_] (d/deferred)))
+
+(defn wrap
+  "Converts `CompletableFuture` to `manifod.deferred`"
+  [fut]
+  (let [d (d/deferred)]
+    (-> fut
+        (p/-then #(d/success! d %))
+        (p/-catch #(d/error! d %)))
+    d))

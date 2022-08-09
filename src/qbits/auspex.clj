@@ -59,7 +59,6 @@
   [^Throwable x]
   (CompletableFuture/failedFuture x))
 
-
 (defn chain'
   "Like chain but assumes fns return raw values instead of potential
   futures"

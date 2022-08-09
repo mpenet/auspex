@@ -58,8 +58,7 @@
          @(-> (doto (d/deferred)
                 (a/error! ex))
               (a/catch ExceptionInfo
-                  (fn [_] ::foo)))))
-
+                       (fn [_] ::foo)))))
 
   (let [p (promise)]
     @(-> (doto (d/deferred)
@@ -205,7 +204,6 @@
   (is (thrown? ExceptionInfo
                (a/unwrap (a/chain (d/error-deferred ex))))))
 
-
 (deftest loop-recur-test
   (is (= 5
          @(a/loop [x 0]
@@ -232,7 +230,7 @@
                             (a/recur %)
                             %))
                 (a/catch ExceptionInfo
-                    (fn [_] ::foo)))))))
+                         (fn [_] ::foo)))))))
 
 (deftest let-flow-test
   (is (= 1
@@ -256,5 +254,12 @@
 
 (deftest all-any-test
   (are [pred result f input] (pred result (deref (f input)))
-    =         [1 2 3]  a/all  [1 2 3]
-    contains? #{1 2 3} a/any  [1 2 3]))
+    = [1 2 3] a/all [1 2 3]
+    contains? #{1 2 3} a/any [1 2 3]))
+
+(deftest wrap-test
+  (is (= @(qbits.auspex.manifold/wrap (a/future (fn [] :foo)))
+         :foo))
+  (is (thrown? ExceptionInfo
+               @(qbits.auspex.manifold/wrap (a/error-future (ex-info "Boom" {}))))))
+
