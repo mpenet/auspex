@@ -3,8 +3,7 @@
   few utility functions to mimic manifold features.  Shamelessly stole
   code/ideas from the awesome manifold library."
   (:refer-clojure :exclude [future future? realized? loop recur empty])
-  (:require [qbits.auspex :as a]
-            [qbits.auspex.function :as f]
+  (:require [qbits.auspex.function :as f]
             [qbits.auspex.impl :as impl]
             [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
