@@ -18,9 +18,6 @@
 (defprotocol Complete!
   (-complete! [_ f executor]))
 
-(defprotocol Success?
-  (-success? [_]))
-
 (defprotocol Error!
   (-error! [_ val]))
 
@@ -51,4 +48,5 @@
 (defprotocol Wrap
   (-wrap [x]))
 
-(defprotocol Future)
+(defprotocol Future
+  (-future? [x]))

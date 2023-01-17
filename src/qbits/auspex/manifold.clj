@@ -1,6 +1,6 @@
 (ns qbits.auspex.manifold
-  (:require [qbits.auspex.protocols :as p]
-            [manifold.deferred :as d])
+  (:require [manifold.deferred :as d]
+            [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture)))
 
 (defn- error
@@ -14,6 +14,8 @@
 (extend-type manifold.deferred.IDeferred
 
   p/Future
+  (-future? [d] true)
+
   p/Success!
   (-success! [d x]
     (d/success! d x))

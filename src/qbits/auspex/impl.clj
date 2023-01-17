@@ -1,6 +1,6 @@
 (ns qbits.auspex.impl
-  (:require [qbits.auspex.protocols :as p]
-            [qbits.auspex.function :as f])
+  (:require [qbits.auspex.function :as f]
+            [qbits.auspex.protocols :as p])
   (:import (java.util.concurrent CompletableFuture
                                  Executor
                                  CompletionException
@@ -16,9 +16,17 @@
     (or (ex-cause ex) ex)
     ex))
 
+(extend-protocol p/Future
+  Object
+  (-future? [x] false)
+
+  nil
+  (-future? [x] false))
+
 (extend-type CompletableFuture
 
   p/Future
+  (-future? [d] true)
 
   p/Success!
   (-success! [cf x]

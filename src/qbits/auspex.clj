@@ -26,10 +26,7 @@
 (def timeout! #'p/-timeout!)
 (def wrap #'p/-wrap)
 (def empty #'p/-empty)
-
-(defn future?
-  [x]
-  (satisfies? p/Future x))
+(def future? #'p/-future?)
 
 (defn future
   "No arg creates an empty/incomplete future, 1 arg creates a future
