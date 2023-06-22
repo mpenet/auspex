@@ -18,4 +18,10 @@
                 lambdaisland/kaocha {:mvn/version "1.71.1119"}
                 com.lambdaisland/kaocha-cljs {:mvn/version "1.4.130"}}
    :extra-paths ["test"]
-   :main-opts ["-m" "kaocha.runner"]}}}
+   :main-opts ["-m" "kaocha.runner"]}
+  :quickdoc
+  {:deps {org.babashka/cli {:mvn/version "0.4.36"}
+          io.github.borkdude/quickdoc
+          {:deps/root "jvm"
+           :git/sha "c5320cbe311b651a60b47f4d00d7e8ab63291b6e"}}
+   :main-opts ["-m" "babashka.cli.exec" "quickdoc.api" "quickdoc"]}}}

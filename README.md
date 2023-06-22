@@ -22,9 +22,9 @@ computation happens, otherwise they will use the execution context of the
 previous step.  So if you specify an executor at a level be aware that
 subsequent levels will re-use it unless you specify otherwise.
 
-## Docs
+## API
 
-[![cljdoc badge](https://cljdoc.xyz/badge/cc.qbits/auspex)](https://cljdoc.xyz/d/cc.qbits/auspex/CURRENT)
+[quickdoc documentation](API.md)
 
 ## Usage
 
