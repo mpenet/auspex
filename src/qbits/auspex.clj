@@ -156,7 +156,7 @@
         vals (map second pairs)
         var-syms (map (fn [_] (gensym "var")) vars)
         ok (gensym "ok")
-        ret (gensym "x-sym")]
+        ret (gensym "ret")]
     `(let [result# (future)]
        ((fn fun# [result# ~@var-syms]
           (clojure.core/loop [~@(interleave vars var-syms)]
