@@ -189,7 +189,14 @@
        result#)))
 
 (defmacro let-flow
-  "manifold.`let-flow` port"
+  "manifold.`let-flow` port. It doesn't do any fancy binding dependency analysis
+  like manifold does, but it's good enough for the common use cases, not to
+  mention drastically simpler to implement.
+
+  A version of `let` where deferred values that are let-bound or closed over can
+  be treated as if they are realized values. The body will only be executed once
+  all of the let-bound values, even ones only used for side effects, have been
+  computed."
   [steps & body]
   (let [steps-pairs (partition 2 steps)]
     (reduce (fn [step [x f]]
