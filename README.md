@@ -7,14 +7,9 @@ nice stuff. I'd like to emphasize, Auspex **does not** include manifold, you can
 use both auspex and manifold together but the main goal of the library is not to
 enable this.
 
-`future` here represents the result of an asynchronous computation (promise), so
-more in the java sense than `clojure.core/future` (which will always run it's
-computation on an unbounded threadpool).
-
-You can also use a `qbits.auspex/future` as replacement of `clojure.core/future`
-via `(a/future (fn [] ::foo) executor)` it would then realize the future on
-whatever ExecutorService you'd choose (there's some sugar for that on
-`qbits.auspex.executor`).
+`qbits.auspex/future` returns a here represents the result of an asynchronous
+computation, similary to a manifold.deferred and not like clojure.core/future
+which also bundles an execution context.
 
 Composition functions (`then`, `fmap`, `complete!`, `handle`, `finally`) all
 have an extra/optional `executor` argument that allows to control where
