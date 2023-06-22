@@ -1,25 +1,26 @@
 # auspex
 
-Auspex is small wrapper over java-11+ `CompletableFuture` that mimics
-most of [manifold](https://github.com/ztellman/manifold) `deferred`
-API, including `chain`, `catch`, `finally`, `loop/recur`, `zip`,
-`let-flow` and most of the nice stuff.
+Auspex is small wrapper over java-11+ `CompletableFuture` that **mimics** most
+of [manifold](https://github.com/ztellman/manifold) `deferred` API, including
+`chain`, `catch`, `finally`, `loop/recur`, `zip`, `let-flow` and most of the
+nice stuff. I'd like to emphasize, Auspex **does not** include manifold, you can
+use both auspex and manifold together but the main goal of the library is not to
+enable this.
 
-`future` here represents the result of an asynchronous computation
-(promise), so more in the java sense than `clojure.core/future` (which
-will always run it's computation on an unbounded threadpool).
+`future` here represents the result of an asynchronous computation (promise), so
+more in the java sense than `clojure.core/future` (which will always run it's
+computation on an unbounded threadpool).
 
-You can also use a `qbits.auspex/future` as replacement of
-`clojure.core/future` via `(a/future (fn [] ::foo) executor)` it would
-then realize the future on whatever ExecutorService you'd choose
-(there's some sugar for that on `qbits.auspex.executor`).
+You can also use a `qbits.auspex/future` as replacement of `clojure.core/future`
+via `(a/future (fn [] ::foo) executor)` it would then realize the future on
+whatever ExecutorService you'd choose (there's some sugar for that on
+`qbits.auspex.executor`).
 
-Composition functions (`then`, `fmap`, `complete!`, `handle`,
-`finally`) all have an extra/optional `executor` argument that allows
-to control where computation happens, otherwise they will use the
-execution context of the previous step.  So if you specify an executor
-at a level be aware that subsequent levels will re-use it unless you
-specify otherwise.
+Composition functions (`then`, `fmap`, `complete!`, `handle`, `finally`) all
+have an extra/optional `executor` argument that allows to control where
+computation happens, otherwise they will use the execution context of the
+previous step.  So if you specify an executor at a level be aware that
+subsequent levels will re-use it unless you specify otherwise.
 
 ## Docs
 
