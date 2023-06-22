@@ -27,4 +27,4 @@ jobs:
             m2-
 
       - name: Test
-        run: clj -M:test
+        run: clojure -M:test
