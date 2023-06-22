@@ -173,16 +173,15 @@
                             (error! result# err#)
 
                             (recur? ~ok)
-                            ~@(map
-                               (fn [n] `(nth @~ok ~n))
-                               (range (count vars)))
-
+                            (apply fun# result# @~ok)
                             :else
                             (success! result# ~ok))))
+
                 (recur? ~ret)
                 (~'recur ~@(map
                             (fn [n] `(nth @~ret ~n))
                             (range (count vars))))
+
                 :else
                 (success! result# ~ret)))))
         result#

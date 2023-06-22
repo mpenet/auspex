@@ -256,7 +256,7 @@
                  (a/success-future 3)))))
 
 (deftest loop-recur-test
-  (is (true? @(a/loop [] true)))
+  (is (true? @(a/loop [a 1] true)))
 
   (is (= [0 1 2 3 4]
          @(a/loop [x []]
@@ -264,16 +264,16 @@
               (a/recur (conj x (count x)))
               x))))
 
-  (is (thrown? ExceptionInfo
-               @(loop [x []]
+  (is (thrown? java.util.concurrent.ExecutionException
+               @(a/loop [x []]
                   (throw ex))))
 
-  (is (thrown? ExceptionInfo
-               @(loop [x []]
+  (is (thrown? java.util.concurrent.ExecutionException
+               @(a/loop [x []]
                   (a/recur (throw ex)))))
 
-  (is (thrown? ExceptionInfo
-               @(loop [x (throw ex)])))
+  (is (thrown? ExceptionInfo ; throw up one level
+               @(a/loop [x (throw ex)])))
 
   (is (= 5
          @(a/loop [x 0]
@@ -308,7 +308,7 @@
 
 (deftest loop-recur-stack
   (testing "ensure loop/recur doesn't blow the stack"
-    (let [depths 1000000]
+    (let [depths 10000000]
       (is (zero? @(a/loop [i depths]
                     (if (pos? i)
                       (a/recur (dec i))
