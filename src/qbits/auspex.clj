@@ -154,33 +154,37 @@
   (let [pairs (partition 2 bindings)
         vars (map first pairs)
         vals (map second pairs)
-        var-syms (map (fn [_] (gensym "var")) vars)]
+        var-syms (map (fn [_] (gensym "var")) vars)
+        ok (gensym "ok")
+        ret (gensym "x-sym")]
     `(let [result# (future)]
        ((fn fun# [result# ~@var-syms]
           (clojure.core/loop [~@(interleave vars var-syms)]
-            (let [ret# (try
+            (let [~ret (try
                          ~@body
                          (catch Throwable t#
                            (error! result# t#)))]
               (cond
-                (future? ret#)
-                (handle ret#
-                        (fn [ok# err#]
+                (future? ~ret)
+                (handle ~ret
+                        (fn [~ok err#]
                           (cond
                             err#
                             (error! result# err#)
 
-                            (recur? ok#)
-                            (apply fun# result# @ok#)
+                            (recur? ~ok)
+                            ~@(map
+                               (fn [n] `(nth @~ok ~n))
+                               (range (count vars)))
 
                             :else
-                            (success! result# ok#))))
-
-                (recur? ret#)
-                (apply fun# result# @ret#)
-
+                            (success! result# ~ok))))
+                (recur? ~ret)
+                (~'recur ~@(map
+                            (fn [n] `(nth @~ret ~n))
+                            (range (count vars))))
                 :else
-                (success! result# ret#)))))
+                (success! result# ~ret)))))
         result#
         ~@vals)
        result#)))
@@ -210,3 +214,5 @@
     @f
     (catch Exception e
       (throw (ex-unwrap e)))))
+
+

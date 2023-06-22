@@ -306,6 +306,23 @@
     (is (= 1 @(a/loop [{:keys [a]} {:a 1}] a)))
     (is @(a/loop [[x & xs] [1 2 3]] (or (= x 3) (a/recur xs))))))
 
+(deftest loop-recur-stack
+  (testing "ensure loop/recur doesn't blow the stack"
+    (let [depths 1000000]
+      (is (zero? @(a/loop [i depths]
+                    (if (pos? i)
+                      (a/recur (dec i))
+                      i))))
+      (is (zero? @(a/loop [i (a/success-future depths)]
+                    (if (pos? @i)
+                      (a/recur (a/success-future (dec @i)))
+                      @i))))
+
+      (is (zero? @(a/loop [i (a/success-future depths)]
+                    (if (pos? @i)
+                      (a/recur (a/success-future (dec @i)))
+                      i)))))))
+
 (deftest let-flow-test
   (is (= 1
          @(a/let-flow [x 1]
@@ -332,7 +349,7 @@
 
 (deftest all-any-test
   (are [pred result f input] (pred result (deref (f input)))
-    =         [1 2 3]  a/all  [1 2 3]
-    =         [1 2 3]  a/all' (map future-val [1 2 3])
-    contains? #{1 2 3} a/any  [1 2 3]
+    = [1 2 3] a/all [1 2 3]
+    = [1 2 3] a/all' (map future-val [1 2 3])
+    contains? #{1 2 3} a/any [1 2 3]
     contains? #{1 2 3} a/any' (map future-val [1 2 3])))
