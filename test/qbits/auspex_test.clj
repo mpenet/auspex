@@ -308,7 +308,7 @@
 
 (deftest loop-recur-stack
   (testing "ensure loop/recur doesn't blow the stack"
-    (let [depths 10000000]
+    (let [depths 1e7]
       (is (zero? @(a/loop [i depths]
                     (if (pos? i)
                       (a/recur (dec i))
@@ -321,6 +321,11 @@
       (is (zero? @(a/loop [i (a/success-future depths)]
                     (if (pos? @i)
                       (a/recur (a/success-future (dec @i)))
+                      i))))
+
+      (is (zero? @(a/loop [i depths]
+                    (if (pos? i)
+                      (a/success-future (a/recur (dec i)))
                       i)))))))
 
 (deftest let-flow-test

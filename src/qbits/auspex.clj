@@ -156,26 +156,40 @@
         vals (map second pairs)
         var-syms (map (fn [_] (gensym "var")) vars)
         ok (gensym "ok")
-        ret (gensym "ret")]
+        ret (gensym "ret")
+        val (gensym "val")]
     `(let [result# (future)]
-       ((fn fun# [result# ~@var-syms]
+       ((fn ^{:once true} fun# [result# ~@var-syms]
           (clojure.core/loop [~@(interleave vars var-syms)]
-            (let [~ret (try
-                         ~@body
-                         (catch Throwable t#
-                           (error! result# t#)))]
+            (let [~ret (try ~@body
+                            (catch Throwable t#
+                              (error! result# t#)))]
               (cond
                 (future? ~ret)
-                (handle ~ret
-                        (fn [~ok err#]
-                          (cond
-                            err#
-                            (error! result# err#)
+                (if (realized? ~ret)
+                  (let [~val (try @~ret (catch Throwable t# t#))]
+                    (cond
+                      (instance? Throwable ~val)
+                      (error! result# ~val)
 
-                            (recur? ~ok)
-                            (apply fun# result# @~ok)
-                            :else
-                            (success! result# ~ok))))
+                      (recur? ~val)
+                      (~'recur ~@(map
+                                  (fn [n] `(nth @~val ~n))
+                                  (range (count vars))))
+
+                      :else
+                      (success! result# ~val)))
+                  (handle ~ret
+                          (fn [~ok err#]
+                            (cond
+                              err#
+                              (error! result# err#)
+
+                              (recur? ~ok)
+                              (apply fun# result# @~ok)
+
+                              :else
+                              (success! result# ~ok)))))
 
                 (recur? ~ret)
                 (~'recur ~@(map
