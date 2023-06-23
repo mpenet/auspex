@@ -159,7 +159,7 @@
         ret (gensym "ret")
         val (gensym "val")]
     `(let [result# (future)]
-       ((fn ^{:once true} fun# [result# ~@var-syms]
+       ((fn fun# [result# ~@var-syms]
           (clojure.core/loop [~@(interleave vars var-syms)]
             (let [~ret (try ~@body
                             (catch Throwable t#
