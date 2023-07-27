@@ -223,6 +223,10 @@
                      inc
                      inc)))
 
+  (is (a/future? (a/chain* (throw (ex-info "boom" {}))
+                           inc
+                           inc)))
+
   (is (= 3 @(a/chain-futures (a/success-future 1)
                              f-inc
                              f-inc)))

@@ -73,6 +73,14 @@
           (wrap x)
           fns))
 
+(defmacro chain*
+  "Same as `chain` but will catch exceptions thrown from initial value"
+  [x & fns]
+  `(try
+     (chain ~x ~@fns)
+     (catch Exception e#
+       (error-future e#))))
+
 (defn chain-futures
   "Like chain but takes a value and functions that will return futures"
   [x & fs]
