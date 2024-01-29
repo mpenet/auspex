@@ -153,7 +153,7 @@
   must be used.
 
    (loop [i 1e6]
-     (chain (future i)
+     (chain (success-future i)
        #(if (zero? %)
           %
           (recur (dec %)))))"
